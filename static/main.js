@@ -7,15 +7,17 @@ var colorMap = {
 
 var BoxModel = Backbone.Model.extend({
 	defaults: {
-		backgroundColor: 'blanchedalmond',
+		backgroundColor: 'black',
 		interval: 1000 
 	},
 
 	colors: [
-		'#2caae1',
-		'#3b5998',
-		'#3c9',
-		'#dc4b38'
+		'#C41E3A',
+		'#009E60',
+		'#0051BA',
+		'#FF5800',
+		'#FFD500',
+		'#FFFFFF'
 	],
 
 	initialize: function () {
@@ -68,11 +70,26 @@ var BoxesView = Backbone.View.extend({
 
 		// Auto generate a collection of box models
 		this.collection = this.collection || new Backbone.Collection([
-			new BoxModel({color: colorMap[0]}),
-			new BoxModel({color: colorMap[1]}),
-			new BoxModel({color: colorMap[2]}),
-			new BoxModel({color: colorMap[3]})
+			new BoxModel({color: colorMap[0], row: 0}),
+			new BoxModel({color: colorMap[1], row: 0}),
+			new BoxModel({color: colorMap[2], row: 0}),
+			new BoxModel({color: colorMap[3], row: 1}),
+			new BoxModel({color: colorMap[4], row: 1}),
+			new BoxModel({color: colorMap[5], row: 1}),
+			new BoxModel({color: colorMap[6], row: 2}),
+			new BoxModel({color: colorMap[7], row: 2}),
+			new BoxModel({color: colorMap[8], row: 2}),
 		]);
+
+		this.collection.on('change:backgroundColor', function(model){
+			var this_row = model.collection.where({row: model.get('row')});
+			var all_same = _.every(this_row, function(m) {
+				return m.get('backgroundColor') === model.get('backgroundColor');
+			});
+			if (all_same) {
+				console.log('hey hey hey, row ' + model.get('row') +' has the same colors!');
+			}
+		});
 	},
 
 	render: function () {
@@ -95,6 +112,6 @@ var BoxesView = Backbone.View.extend({
 });
 
 $(document).ready(function () {
-	var boxView = new BoxesView({}).render();
+	var boxView = new BoxesView().render();
 	$('.boxes').append(boxView.el);
 });
